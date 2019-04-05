@@ -11,6 +11,8 @@ Compression based on Discrete Wavelet Transform:
 
 This implementation uses the template library of CUDA and lambdas of C++. Also, we implemented a struct for RLE.
 
+- Thrusth: https://docs.nvidia.com/cuda/thrust/index.html
+
 ```cpp
     thrusth::
 
@@ -55,7 +57,7 @@ This implementation uses the template library of CUDA and lambdas of C++. Also, 
 ```cpp
     thrust::device_vector<int> arrayCompressedDevice =  gpuEncoding(d_rle);
 ```
-
+<img src="https://github.com/adolfos94/Enhanced-Run-Length-Encoding/blob/master/gpuEncoding.png?raw=true">
 
 6. Copy the GPU to CPU for store or transmission purposes.
 ```cpp
@@ -67,6 +69,8 @@ This implementation uses the template library of CUDA and lambdas of C++. Also, 
 ```cpp
     thrust::device_vector<RLE> res_rle_gpu = gpuDecoding(arrayCompressedDevice);
 ```
+
+<img src="https://github.com/adolfos94/Enhanced-Run-Length-Encoding/blob/master/gpuDecoding.png?raw=true">
 
 8. Copy the GPU vector to CPU. Since, this algorithm is a lossless compression algorithm, the decoded vector must be similar to the original vector.
 
