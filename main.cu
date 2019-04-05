@@ -58,7 +58,7 @@ vector<int> elegantUnpair(int z) {
   return tuple;
 }
 // GPU Functions
-thrust::device_vector<int> gpuCompress(thrust::device_vector<RLE> rle) {
+thrust::device_vector<int> gpuEncoding(thrust::device_vector<RLE> rle) {
   thrust::device_vector<int> arrayCompressed(rle.size());
 
   // GPU - Elegant Pair Function
@@ -78,7 +78,7 @@ thrust::device_vector<int> gpuCompress(thrust::device_vector<RLE> rle) {
 }
 
 thrust::device_vector<RLE>
-gpuDecompress(thrust::device_vector<int> arrayCompressed) {
+gpuDecoding(thrust::device_vector<int> arrayCompressed) {
   thrust::device_vector<RLE> rle(arrayCompressed.size());
 
   // GPU - Elegant Unpair Function
@@ -109,7 +109,7 @@ gpuDecompress(thrust::device_vector<int> arrayCompressed) {
 }
 
 // CPU Functions
-vector<int> cpuCompress(int *rle_1, int *rle_2, int size) {
+vector<int> cpuEncode(int *rle_1, int *rle_2, int size) {
   vector<int> arrayCompressed;
   for (int index = 0; index < size; index++) {
     arrayCompressed.push_back(elegantPair(rle_1[index], rle_2[index]));
@@ -117,7 +117,7 @@ vector<int> cpuCompress(int *rle_1, int *rle_2, int size) {
   return arrayCompressed;
 }
 
-vector<vector<int>> cpuDecompress(vector<int> arrayCompressed) {
+vector<vector<int>> cpuDecode(vector<int> arrayCompressed) {
   vector<vector<int>> rle;
   for (int index = 0; index < arrayCompressed.size(); index++) {
     vector<int> tuple = elegantUnpair(arrayCompressed[index]);
@@ -185,7 +185,7 @@ int main(int argc, const char *argv[]) {
   // Compress on GPU
   cout << "Compressing GPU.." << endl;
   cudaEventRecord(start);
-  thrust::device_vector<int> arrayCompressedDevice = gpuCompress(d_rle);
+  thrust::device_vector<int> arrayCompressedDevice = gpuEncoding(d_rle);
   cudaEventRecord(stop);
   cudaEventSynchronize(stop);
   cudaEventElapsedTime(&milliseconds, start, stop);
@@ -201,7 +201,7 @@ int main(int argc, const char *argv[]) {
   // // Decompress on GPU
   cout << "Decompressing GPU.." << endl;
   cudaEventRecord(start);
-  thrust::device_vector<RLE> res_rle_gpu = gpuDecompress(arrayCompressedDevice);
+  thrust::device_vector<RLE> res_rle_gpu = gpuDecoding(arrayCompressedDevice);
   cudaEventRecord(stop);
   cudaEventSynchronize(stop);
   cudaEventElapsedTime(&milliseconds, start, stop);
@@ -219,7 +219,7 @@ int main(int argc, const char *argv[]) {
   // Compress on CPU
   cout << "Compressing CPU.." << endl;
   cudaEventRecord(start);
-  vector<int> arrayCompressed = cpuCompress(rle_1, rle_2, SIZE);
+  vector<int> arrayCompressed = cpuEncode(rle_1, rle_2, SIZE);
   cudaEventRecord(stop);
   cudaEventSynchronize(stop);
   cudaEventElapsedTime(&milliseconds, start, stop);
@@ -232,7 +232,7 @@ int main(int argc, const char *argv[]) {
 
   cout << "Decompressing CPU.." << endl;
   cudaEventRecord(start);
-  vector<vector<int>> res_rle = cpuDecompress(arrayCompressed);
+  vector<vector<int>> res_rle = cpuDecode(arrayCompressed);
   cudaEventRecord(stop);
   cudaEventSynchronize(stop);
   cudaEventElapsedTime(&milliseconds, start, stop);
